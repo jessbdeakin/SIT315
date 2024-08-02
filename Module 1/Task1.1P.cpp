@@ -1,21 +1,32 @@
 
 const int POT_PIN = A0; // Potentiometer
 const int SRV_PIN = 3;  // Servo
+const float THRESHOLD = 0.5f;
+bool overThreshold = false;
 
 void setup()
 {
   pinMode(POT_PIN, INPUT);
-  pinMode(OUT_PIN, OUTPUT);
+  pinMode(SRV_PIN, OUTPUT);
+  
+  analogWrite(SRV_PIN, 0);
   
   Serial.begin(9600);
 }
 
 void loop()
 {
-  float x = analogRead(POT_PIN) / 675.0f;
+  float reading = analogRead(POT_PIN) / 675.0f;
   // Read and normalise potentiometer value
-  analogWrite(OUT_PIN, 255 - (int)(x * 255.0f));
-  // Write value to servo, with 0 = no turn, 1 = max turn
-  Serial.println(x);
+  
+  overThreshold = reading > THRESHOLD;
+  
+  if(overThreshold){
+    analogWrite(SRV_PIN, 1000);
+  } else {
+    analogWrite(SRV_PIN, 0);
+  }
+  
+  Serial.println(reading);
   // Print normalised potentiometer value
 }
